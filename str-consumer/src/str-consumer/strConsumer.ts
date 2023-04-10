@@ -1,6 +1,6 @@
 import { Kafka } from 'kafkajs'
 
-export default async function runConsumer(topic: string) {
+export async function runConsumer(topic: string) {
   const kafka = new Kafka({
     clientId: 'kafka',
     brokers: ['localhost:9092'],

@@ -29,7 +29,7 @@ export class KafkaSingleton {
     createPartitioner: Partitioners.LegacyPartitioner,
     allowAutoTopicCreation: true,
   })
-  const consumer = kafka.consumer({ groupId: 'my-group3' })
+  const consumer = kafka.consumer({ groupId: 'test-consumer-01' })
   
   await producer.connect()
   await consumer.connect()
