@@ -20,25 +20,24 @@ export class KafkaSingleton {
   
 }
 
-/**
- * This method provides an connection for kafka singleton instance
- * */
+
  const connect = async () => {
   
   const kafka = KafkaSingleton.getInstance()
-  const producer = kafka.producer({
-    createPartitioner: Partitioners.LegacyPartitioner
-  })
-  await producer.connect()
   
-  return { producer }
+  const producer = kafka.producer({
+    createPartitioner: Partitioners.LegacyPartitioner,
+    allowAutoTopicCreation: true,
+  })
+  const consumer = kafka.consumer({ groupId: 'my-group3' })
+  
+  await producer.connect()
+  await consumer.connect()
+  
+  return { producer, consumer }
 }
 
-/**
-* This method provides an producer for kafka singleton instance
-* */
 const produce = async (topic: string, messages: Array<Message>) => {
-  
   const producer = (await connect()).producer
   
   await producer.send({
@@ -47,4 +46,24 @@ const produce = async (topic: string, messages: Array<Message>) => {
   })
 }
 
-export { produce, connect }
+const consume = async ( topic: string ) => {
+  const consumer = (await connect()).consumer
+  await consumer.subscribe({ topic: topic, fromBeginning: false })
+
+  await consumer.run({
+      autoCommit: false,
+      eachMessage: async ({ topic, partition, message }) => {
+          try {
+            if(!message.value) {
+             throw new Error("Error reading the message")
+            }
+            console.log(message.value.toString())
+          } catch (err: any) {
+             console.log(`Error consuming Message on topic ${topic} and partition ${partition} in offset ${(Number(message.offset) + 1).toString()}`);
+             console.log(err.message);
+          }
+      },
+  })
+}
+
+export { produce, connect, consume }

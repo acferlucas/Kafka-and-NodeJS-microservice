@@ -1,7 +1,9 @@
 import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
-import { strProduceMessage } from './producer/str-producer'
+import { strProduceMessage, sendMessage } from './producer/strProducer'
+import { consume } from './kafka/index'
+import { z } from 'zod'
 
 const server = express();
 
@@ -17,13 +19,30 @@ server.get('/api', ( req, res ) => {
   res.send(true)
 })
 
-server.post('/api/send/topic', async (req, res) => {
+server.post('/api/send/str-topic', async (req, res) => {
   
   await strProduceMessage().catch((err) => {
     console.log(err)
     res.status(500).send(false)
   });
   
+  res.status(201).send(true)
+
+})
+
+server.post('/api/send/message', async (req, res) => {
+  const sendMessageBody = z.object({
+    message: z.string(),
+  })
+
+  const { message } = sendMessageBody.parse(req.body);
+
+  await sendMessage(message).catch((err) => {
+    console.log(err)
+
+    res.status(500).send(false)
+  });
+
   res.status(201).send(true)
 
 })
