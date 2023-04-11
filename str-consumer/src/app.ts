@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import morgan from 'morgan';
 
-import { runConsumer } from './str-consumer/strConsumer';
+import { runConsumer, runConsumerB } from './str-consumer/strConsumer';
 import { z } from 'zod';
 
 const server = express();
@@ -27,11 +27,12 @@ server.post("/consumer/str-consumer/consume", async (req, res) => {
 
   const { topic } = postConsumerBody.parse(req.body)
 
-  await runConsumer(topic).catch(err => {
+  await Promise.all([runConsumer(topic), runConsumerB(topic)]).catch(err => {
     console.log(err)
 
     res.status(500).send({ err })
-  });
+  })
+
 
   res.status(200).send(true)
 })
