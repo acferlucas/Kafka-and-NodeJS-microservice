@@ -27,11 +27,14 @@ server.post("/consumer/str-consumer/consume", async (req, res) => {
 
   const { topic } = postConsumerBody.parse(req.body)
 
-  await Promise.all([runConsumer(topic), runConsumerB(topic)]).catch(err => {
-    console.log(err)
+  await Promise.all([
+    runConsumer(topic),
+    runConsumerB(topic)])
+    .catch(err => {
+      console.log(err)
 
-    res.status(500).send({ err })
-  })
+      res.status(500).send({ err })
+    })
 
 
   res.status(200).send(true)

@@ -2,7 +2,7 @@ import express from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
 
-import { strProduceMessage, sendMessage } from './producer/strProducer'
+import { strProduceMessage, produceMessage } from './producer/strProducer'
 import { z } from 'zod'
 
 import config from './core/config'
@@ -37,12 +37,13 @@ server.post('/api/send/str-topic', async (req, res) => {
 
 server.post('/api/send/message', async (req, res) => {
   const sendMessageBody = z.object({
+    topic: z.string(),
     message: z.string(),
   })
 
-  const { message } = sendMessageBody.parse(req.body);
+  const {  topic ,message } = sendMessageBody.parse(req.body);
 
-  await sendMessage(message).catch((err) => {
+  await produceMessage(topic, message).catch((err) => {
     console.log(err)
 
     res.status(500).send(false)

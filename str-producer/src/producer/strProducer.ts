@@ -28,4 +28,17 @@ async function sendMessage(message: string) {
 ])
 }
 
-export { strProduceMessage, sendMessage }
+async function produceMessage(topic: string, message: string) {
+  try {
+    await produce(topic, [
+      {
+        value: message,
+      }
+    ])
+  }catch (err) {
+    console.log(err)
+    throw new Error(String (err))
+  }
+}
+
+export { strProduceMessage, sendMessage,produceMessage  }

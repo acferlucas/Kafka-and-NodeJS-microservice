@@ -5,6 +5,10 @@ import { Kafka } from 'kafkajs'
  * o propio cluster faz esse gerenciamento.
  * podemos ter N grupos diferentes ligados a partições do kafka.
  * porém um numero limite de de listening de um mesmo grupo para cada topico.
+ * 
+ * 
+ * eachBath é util quando precisamos processar um lote de mensagens de uma só vez, ao invez de processar cada mensagem nova.
+ * podemos criar intercptors e podemos utilizar middleweres 
  */
 export async function runConsumer(topic: string) {
   const kafka = new Kafka({
@@ -22,8 +26,10 @@ export async function runConsumer(topic: string) {
     topic: topic
   })
 
+
   await consumer.run({
     autoCommit: false,
+
     eachMessage: async ({ topic, partition, message }) => {
       try {
         if (!message.value) {
