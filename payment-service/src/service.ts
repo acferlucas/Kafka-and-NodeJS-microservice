@@ -3,14 +3,13 @@ import config from './core/config'
 
 import morgan from 'morgan'
 import cors from 'cors'
-
 import paymentController from './controller/paymentController'
 
 const server = express();
 
 server.use(cors());
 server.use(morgan('dev'));
-server.use(express.json())
+server.use(express.json());
 
 server.listen(config.server.port, () => {
   console.log('listening on port ' + config.server.port)

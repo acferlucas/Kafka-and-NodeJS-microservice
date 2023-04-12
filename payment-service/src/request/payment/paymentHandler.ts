@@ -1,4 +1,5 @@
-import producerPayment from '../../kafka/producerPayment'
+import { produce } from '../../kafka'
+import config from '../../core/config'
 
 interface Payment {
   id: number;
@@ -12,12 +13,13 @@ export class PaymentHandler {
   constructor() { }
 
   async sendPayment(body: Payment): Promise<Payment> {
-    await (await producerPayment()).send({
-      topic: 'payment',
-      messages: [{
+
+    await produce(config.server.KAFKA_TOPIC, [
+      {
+        headers: { operation: "created" },
         value: JSON.stringify(body)
-      }]
-    })
+      }
+    ]);
 
     return body
   }
