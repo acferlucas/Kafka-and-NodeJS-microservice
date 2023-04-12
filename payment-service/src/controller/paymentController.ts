@@ -20,7 +20,7 @@ export default () => {
 
       const payment = await new PaymentHandler().sendPayment(body);
 
-      res.status(200).send(payment)
+      res.status(201).send(payment)
     } catch (err) {
 
       res.status(400).send(err)
